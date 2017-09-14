@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
         Schema::create('product_sale', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('quantity');
+            $table->float('price',8,2);
             $table->integer('sale_id')->unsigned();
             $table->foreign('sale_id')->references('id')->on('sales');
             $table->integer('product_id')->unsigned();
