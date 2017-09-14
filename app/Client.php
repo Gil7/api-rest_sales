@@ -12,6 +12,6 @@ class Client extends Model
     ];
     public function sales()
     {
-      return $this->hasMany('App\sales');
+      return $this->hasMany('App\sale');
     }
 }
