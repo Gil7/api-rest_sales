@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Product;
+use Illuminate\Support\Facades\Validator;
 class ProductsController extends Controller
 {
     /**
@@ -14,7 +15,8 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::all();
+        return response()->json($products,200);
     }
 
     /**
@@ -35,7 +37,20 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = Validator::make($request->all(), [
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required',
+            'quantity' => 'required',
+        ]);
+        if($validation->fails()){
+          return response()->json("All the fields are needed");
+        }
+        $newProduct = Product::create($request->all());
+        return response()->json($newProduct);
+
+
     }
 
     /**
@@ -44,9 +59,9 @@ class ProductsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        //
+        return response()->json($product);
     }
 
     /**
@@ -69,7 +84,9 @@ class ProductsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $update = Product::where('id',$id)->update($request->all());
+        $product = Product::find($id);
+        return response()->json($product);
     }
 
     /**
@@ -80,6 +97,7 @@ class ProductsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product = Product::find($id)->delete();
+        return response()->json('product was deleted',200);
     }
 }
