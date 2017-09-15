@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Client;
+use Illuminate\Support\Facades\Validator;
+
 class ClientsController extends Controller
 {
     /**
@@ -36,14 +38,19 @@ class ClientsController extends Controller
      */
     public function store(Request $request)
     {
-        $newClient = new  Client();
-        $newClient->name = $request->input('name');
-        $newClient->lastname = $request->input('lastname');
-        $newClient->phone = $request->input('phone');
-        $newClient->email = $request->input('email');
-        $newClient->address = $request->input('address');
-        $newClient->save();
-        return response()->json($newClient,200);
+        $validation = Validator::make($request->all(),[
+          'name' => 'required',
+          'lastname' => 'required',
+          'phone' => 'required',
+          'address' => 'required',
+          'email' => 'required',
+
+        ]);
+        if ($validation->fails()) {
+          return response()->json("All the fields are needed");
+        }
+        $client = Client::create($request->all());
+        return response()->json($client,200);
     }
 
     /**
@@ -80,33 +87,9 @@ class ClientsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $anyFieldChanged = false;
+        $update = Client::where('id',$id)->update($request->all());
         $client = Client::find($id);
-        if($request->has('name')){
-          $client->name = $request->input('name');
-          $anyFieldChanged = true;
-        }
-        if($request->has('lastname')){
-          $client->lastname = $request->input('lastname');
-          $anyFieldChanged = true;
-        }
-        if($request->has('address')){
-          $client->address = $request->input('address');
-          $anyFieldChanged = true;
-        }
-        if($request->has('phone')){
-          $client->phone = $request->input('phone');
-          $anyFieldChanged = true;
-        }
-        if($request->has('email')){
-          $client->email = $request->input('email');
-          $anyFieldChanged = true;
-        }
-        if($anyFieldChanged){
-          $client->save();
-          return response()->json($client,200);
-        }
-        return response()->json('nothing to do',200);
+        return response()->json($client);
     }
 
     /**
@@ -117,8 +100,7 @@ class ClientsController extends Controller
      */
     public function destroy($id)
     {
-        $client = Client::findOrFail($id);
-        $client->delete();
+        $client = Client::findOrFail($id)->delete();
         return response()->json('client deleted', 200);
     }
 }
