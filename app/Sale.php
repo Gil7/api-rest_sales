@@ -11,12 +11,13 @@ class Sale extends Model
     protected $fillable = [
       'client_id'
     ];
-    public function client($value='')
+    public function client()
     {
       return $this->belongsTo('App\Client');
     }
     public function products()
     {
-      return $this->belongsToMany('App\Product','product_sale')->withPivot('quantity');
+      return $this->belongsToMany('App\Product','product_sale')->withPivot('quantity','price');
     }
+    
 }
